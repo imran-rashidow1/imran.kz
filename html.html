@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Auth</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    transition: 0.3s;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+#app {
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div id="auth" class="center">
+    <div class="box">
+        <h2>Регистрация / Вход</h2>
+        <input type="text" id="username" placeholder="Логин">
+        <input type="password" id="password" placeholder="Пароль">
+        <button onclick="register()">Создать аккаунт</button>
+        <button onclick="login()">Войти</button>
+    </div>
+</div>
+
+<div id="app" class="center hidden">
+    <h1>Добро пожаловать!</h1>
+    <p id="userText"></p>
+    <button onclick="logout()">Выйти</button>
+</div>
+
+<script>
+function register() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        alert("Введите логин и пароль");
+        return;
+    }
+
+    localStorage.setItem("user", JSON.stringify({username, password}));
+    alert("Аккаунт создан");
+}
+
+function login() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Аккаунт не найден");
+        return;
+    }
+
+    if (user.username === username && user.password === password) {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("currentUser", username);
+        showApp();
+    } else {
+        alert("Неверный логин или пароль");
+    }
+}
+
+function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("currentUser");
+    location.reload();
+}
+
+function showApp() {
+    document.body.style.background = "yellow";
+
+    document.getElementById("auth").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+
+    let username = localStorage.getItem("currentUser");
+    document.getElementById("userText").innerText = "Вы вошли как: " + username;
+}
+
+window.onload = function() {
+    if (localStorage.getItem("loggedIn") === "true") {
+        showApp();
+    } else {
+        document.body.style.background = "white";
+    }
+}
+</script>
+
+</body>
+</html>
